@@ -19,7 +19,7 @@
   justify-content: center;
   padding: 24px;
   background-color: var(--color-bg-cream);
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   font-family: "Inter", sans-serif;
@@ -117,6 +117,12 @@
 .login-button:focus-visible {
   outline: 3px solid var(--color-accent-blue);
   outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    background-size: cover;
+  }
 }
 
 @media (max-width: 400px) {
