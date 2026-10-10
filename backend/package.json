@@ -1,0 +1,17 @@
+{
+  "name": "ong-estoque-backend",
+  "version": "1.0.0",
+  "description": "API do sistema de gestão de estoque da ONG Sonho de Um Menino",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  }
+}
