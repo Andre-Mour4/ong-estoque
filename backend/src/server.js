@@ -4,6 +4,9 @@ const cors = require("cors");
 const pool = require("./db");
 const categoriasRoutes = require("./routes/categorias");
 const itensRoutes = require("./routes/itens");
+const doadoresRoutes = require("./routes/doadores");
+const lotesRoutes = require("./routes/lotes");
+const movimentacoesRoutes = require("./routes/movimentacoes");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -32,6 +35,9 @@ app.get("/api/saude", async (req, res) => {
 
 app.use("/api/categorias", categoriasRoutes);
 app.use("/api/itens", itensRoutes);
+app.use("/api/doadores", doadoresRoutes);
+app.use("/api/lotes", lotesRoutes);
+app.use("/api/movimentacoes", movimentacoesRoutes);
 
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);
