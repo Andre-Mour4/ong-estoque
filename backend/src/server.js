@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
 const categoriasRoutes = require("./routes/categorias");
+const itensRoutes = require("./routes/itens");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,6 +31,7 @@ app.get("/api/saude", async (req, res) => {
 });
 
 app.use("/api/categorias", categoriasRoutes);
+app.use("/api/itens", itensRoutes);
 
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);
