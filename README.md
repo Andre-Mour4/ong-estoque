@@ -44,7 +44,13 @@ git clone https://github.com/SEU-USUARIO/ong-estoque.git
 cd ong-estoque
 ```
 
-### 2. Configurar o backend
+### 2. Criar o banco de dados
+
+Com o PostgreSQL instalado, crie um banco chamado `ong_estoque` (pelo pgAdmin ou com
+`psql -U postgres -c "CREATE DATABASE ong_estoque;"`) e rode o arquivo
+`backend/database/schema.sql` nele. Isso cria as tabelas e as categorias iniciais.
+
+### 3. Configurar o backend
 
 ```bash
 cd backend
@@ -65,7 +71,7 @@ Rodar o servidor:
 npm run dev
 ```
 
-### 3. Configurar o frontend
+### 4. Configurar o frontend
 
 Em outro terminal:
 
