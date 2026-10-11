@@ -79,11 +79,11 @@ router.post("/", async (req, res) => {
         };
       }
 
-      // TODO: gravar usuario_id aqui quando existir login.
       const movimentacao = await cliente.query(
-        `INSERT INTO movimentacoes (lote_id, tipo, quantidade, destino, observacao)
-         VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [loteId, tipo, quantidade, destino, observacao]
+        `INSERT INTO movimentacoes
+           (lote_id, usuario_id, tipo, quantidade, destino, observacao)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+        [loteId, req.usuario.id, tipo, quantidade, destino, observacao]
       );
       const lote = await cliente.query(
         `SELECT quantidade_atual::float8 AS quantidade_atual

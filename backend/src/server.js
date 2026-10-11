@@ -7,6 +7,9 @@ const itensRoutes = require("./routes/itens");
 const doadoresRoutes = require("./routes/doadores");
 const lotesRoutes = require("./routes/lotes");
 const movimentacoesRoutes = require("./routes/movimentacoes");
+const authRoutes = require("./routes/auth");
+const usuariosRoutes = require("./routes/usuarios");
+const { autenticar, apenasAdmin } = require("./middleware/auth");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,11 +36,18 @@ app.get("/api/saude", async (req, res) => {
   }
 });
 
-app.use("/api/categorias", categoriasRoutes);
-app.use("/api/itens", itensRoutes);
-app.use("/api/doadores", doadoresRoutes);
-app.use("/api/lotes", lotesRoutes);
-app.use("/api/movimentacoes", movimentacoesRoutes);
+// Pública: login (a rota /api/saude acima também continua pública).
+app.use("/api/auth", authRoutes);
+
+// Protegidas: exigem login (token JWT no cabeçalho Authorization).
+app.use("/api/categorias", autenticar, categoriasRoutes);
+app.use("/api/itens", autenticar, itensRoutes);
+app.use("/api/doadores", autenticar, doadoresRoutes);
+app.use("/api/lotes", autenticar, lotesRoutes);
+app.use("/api/movimentacoes", autenticar, movimentacoesRoutes);
+
+// Só administrador.
+app.use("/api/usuarios", autenticar, apenasAdmin, usuariosRoutes);
 
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);

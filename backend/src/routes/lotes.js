@@ -241,11 +241,10 @@ router.post("/", async (req, res) => {
       );
       const id = lote.rows[0].id;
 
-      // TODO: gravar usuario_id aqui quando existir login.
       await cliente.query(
-        `INSERT INTO movimentacoes (lote_id, tipo, quantidade, observacao)
-         VALUES ($1, 'entrada', $2, 'Entrada inicial do lote')`,
-        [id, quantidade]
+        `INSERT INTO movimentacoes (lote_id, usuario_id, tipo, quantidade, observacao)
+         VALUES ($1, $2, 'entrada', $3, 'Entrada inicial do lote')`,
+        [id, req.usuario.id, quantidade]
       );
       return id;
     });
