@@ -1,22 +1,42 @@
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import "./LoginPage.css";
 import backgroundImage from "../assets/login-background.png";
 
-export default function LoginPage({ onLogin }) {
+export default function LoginPage() {
+  const { usuario, entrar } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [enviando, setEnviando] = useState(false);
 
-  function handleSubmit(event) {
+  // Quem já está logado não precisa ver a tela de login.
+  if (usuario) {
+    return <Navigate to="/" replace />;
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!email || !senha) {
+    if (!email.trim() || !senha) {
       setErro("Preencha e-mail e senha para continuar.");
       return;
     }
 
     setErro("");
-    onLogin?.({ email, senha });
+    setEnviando(true);
+
+    try {
+      await entrar(email.trim(), senha);
+      navigate("/", { replace: true });
+    } catch (e) {
+      // A mensagem já vem em português do backend (ex.: "E-mail ou senha incorretos.")
+      setErro(e.message);
+      setEnviando(false);
+    }
   }
 
   return (
@@ -24,7 +44,7 @@ export default function LoginPage({ onLogin }) {
       className="login-page"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <main className="login-card" role="main">
+      <main className="login-card">
         <h1 className="login-brand">Sonho de um Menino</h1>
         <p className="login-subtitle">Controle de estoque de doações</p>
 
@@ -41,6 +61,7 @@ export default function LoginPage({ onLogin }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="username"
+            disabled={enviando}
           />
 
           <label className="login-label" htmlFor="senha">
@@ -55,6 +76,7 @@ export default function LoginPage({ onLogin }) {
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             autoComplete="current-password"
+            disabled={enviando}
           />
 
           {erro && (
@@ -63,8 +85,13 @@ export default function LoginPage({ onLogin }) {
             </p>
           )}
 
-          <button type="submit" className="login-button">
-            Entrar
+          <button
+            type="submit"
+            className="login-button"
+            disabled={enviando}
+            aria-busy={enviando}
+          >
+            {enviando ? "Entrando..." : "Entrar"}
           </button>
         </form>
       </main>

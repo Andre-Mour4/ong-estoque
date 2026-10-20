@@ -1,29 +1,17 @@
-@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@400;500;600&display=swap");
-
-:root {
-  --color-bg-cream: #fdf6e9;
-  --color-navy: #1d3557;
-  --color-navy-soft: #4a5b7a;
-  --color-accent-blue: #4a90d9;
-  --color-accent-green: #6dbe45;
-  --color-accent-orange: #f4a63c;
-  --color-white: #ffffff;
-  --color-error: #d9483c;
-}
-
+/* A imagem de fundo cobre a tela inteira (desktop e celular).
+   Em telas muito diferentes de 16:9 as bordas da arte podem ser cortadas. */
 .login-page {
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
   background-color: var(--color-bg-cream);
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  font-family: "Inter", sans-serif;
-  box-sizing: border-box;
 }
 
 .login-card {
@@ -38,7 +26,7 @@
 }
 
 .login-brand {
-  font-family: "Baloo 2", sans-serif;
+  font-family: var(--font-titulo);
   font-weight: 700;
   font-size: 1.6rem;
   color: var(--color-navy);
@@ -74,7 +62,6 @@
   border-radius: 12px;
   padding: 11px 14px;
   font-size: 0.95rem;
-  font-family: "Inter", sans-serif;
   color: var(--color-navy);
   background: var(--color-white);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -84,6 +71,10 @@
   outline: none;
   border-color: var(--color-accent-blue);
   box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.2);
+}
+
+.login-input:disabled {
+  background: #f4f1ea;
 }
 
 .login-error {
@@ -99,18 +90,17 @@
   border-radius: 12px;
   background: var(--color-accent-orange);
   color: var(--color-white);
-  font-family: "Inter", sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.login-button:hover {
+.login-button:hover:not(:disabled) {
   background: #e0952f;
 }
 
-.login-button:active {
+.login-button:active:not(:disabled) {
   transform: scale(0.98);
 }
 
@@ -119,10 +109,9 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 768px) {
-  .login-page {
-    background-size: cover;
-  }
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 @media (max-width: 400px) {
