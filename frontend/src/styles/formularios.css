@@ -1,0 +1,240 @@
+.pagina-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.pagina-form__intro {
+  margin: 0;
+  color: var(--color-navy-soft);
+  line-height: 1.5;
+}
+
+.form-cartao {
+  padding: 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 28px -16px rgba(29, 53, 87, 0.35);
+}
+
+.form-cartao h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-titulo);
+  font-size: 1.3rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.campos-linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .campos-linha {
+    grid-template-columns: 1fr;
+  }
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.campo__rotulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.campo__ajuda {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-navy-soft);
+}
+
+.campo__ajuda a {
+  color: var(--color-accent-blue);
+  font-weight: 600;
+}
+
+.campo__erro {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #a8332a;
+}
+
+.campo__aviso {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #7a5300;
+}
+
+.entrada {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #e3ddcd;
+  border-radius: 12px;
+  background: var(--color-white);
+  color: var(--color-navy);
+  font-size: 0.95rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.entrada:focus {
+  outline: none;
+  border-color: var(--color-accent-blue);
+  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.2);
+}
+
+.entrada:disabled {
+  background: #f4f1ea;
+  cursor: not-allowed;
+}
+
+.entrada[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+textarea.entrada {
+  min-height: 84px;
+  resize: vertical;
+}
+
+/* Campo com a unidade ao lado (ex.: "10 [pacote]") */
+.entrada-sufixo {
+  display: flex;
+  overflow: hidden;
+  border: 1.5px solid #e3ddcd;
+  border-radius: 12px;
+  background: var(--color-white);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.entrada-sufixo:focus-within {
+  border-color: var(--color-accent-blue);
+  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.2);
+}
+
+.entrada-sufixo--erro {
+  border-color: var(--color-error);
+}
+
+.entrada-sufixo input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-navy);
+  font-size: 0.95rem;
+}
+
+.entrada-sufixo__texto {
+  display: grid;
+  place-items: center;
+  padding: 0 14px;
+  background: #f4efe4;
+  color: var(--color-navy-soft);
+  font-size: 0.88rem;
+}
+
+/* Avisos (sucesso / erro) */
+.aviso {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.aviso:focus {
+  outline: none;
+}
+
+.aviso strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.aviso--sucesso {
+  background: #e3f3da;
+  color: #2f6b14;
+}
+
+.aviso--erro {
+  background: #fbe3e0;
+  color: #9c2b22;
+}
+
+.aviso a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.aviso__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 8px;
+}
+
+/* Botões */
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border: 1.5px solid var(--color-navy);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-navy);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(29, 53, 87, 0.06);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--color-accent-blue);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn--primario {
+  border-color: var(--color-accent-orange);
+  background: var(--color-accent-orange);
+}
+
+.btn--primario:hover:not(:disabled) {
+  background: #e8982f;
+}
+
+.form__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .form__acoes .btn {
+    width: 100%;
+  }
+}

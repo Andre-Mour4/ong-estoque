@@ -4,6 +4,7 @@ import RotaProtegida from "./components/RotaProtegida";
 import AppLayout from "./components/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import PainelPage from "./pages/PainelPage";
+import DoacaoPage from "./pages/DoacaoPage";
 import EmConstrucaoPage from "./pages/EmConstrucaoPage";
 
 export default function App() {
@@ -22,7 +23,7 @@ export default function App() {
 
               {/* Telas ainda não feitas: troque o EmConstrucaoPage pela tela real. */}
               <Route path="/estoque" element={<EmConstrucaoPage />} />
-              <Route path="/doacao" element={<EmConstrucaoPage />} />
+              <Route path="/doacao" element={<DoacaoPage />} />
               <Route path="/saida" element={<EmConstrucaoPage />} />
               <Route path="/itens" element={<EmConstrucaoPage />} />
               <Route path="/doadores" element={<EmConstrucaoPage />} />
