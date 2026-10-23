@@ -1,0 +1,43 @@
+.selo {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.selo--vencido {
+  background: #fbe3e0;
+  color: #9c2b22;
+}
+
+.selo--vencendo {
+  background: #fdf0cc;
+  color: #7a5300;
+}
+
+.selo--ok {
+  background: #e3f3da;
+  color: #2f6b14;
+}
+
+.selo--sem_validade {
+  background: #eceff3;
+  color: #4a5568;
+}
+
+.selo--entrada {
+  background: #dcebfa;
+  color: #1f5a99;
+}
+
+.selo--saida {
+  background: #fde7cc;
+  color: #8a4b00;
+}
+
+.selo--esgotado {
+  background: #eceff3;
+  color: #4a5568;
+}

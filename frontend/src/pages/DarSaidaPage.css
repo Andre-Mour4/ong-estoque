@@ -1,0 +1,87 @@
+.lote-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.lote-opcoes legend {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.lote-opcao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid #e3ddcd;
+  border-radius: 12px;
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.lote-opcao:hover {
+  border-color: #cfc5ae;
+}
+
+.lote-opcao--ativo {
+  border-color: var(--color-accent-orange);
+  background: #fff8ec;
+  box-shadow: 0 0 0 3px rgba(244, 166, 60, 0.18);
+}
+
+.lote-opcao:focus-within {
+  outline: 3px solid var(--color-accent-blue);
+  outline-offset: 2px;
+}
+
+.lote-opcao input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-accent-orange);
+}
+
+.lote-opcao__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.lote-opcao__texto span {
+  font-size: 0.82rem;
+  color: var(--color-navy-soft);
+}
+
+.chips-destino {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chip-destino {
+  padding: 5px 12px;
+  border: 1.5px dashed #cfc5ae;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-navy-soft);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.chip-destino:hover:not(:disabled) {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+
+.chip-destino:focus-visible {
+  outline: 3px solid var(--color-accent-blue);
+  outline-offset: 2px;
+}

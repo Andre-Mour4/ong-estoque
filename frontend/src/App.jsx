@@ -5,6 +5,8 @@ import AppLayout from "./components/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import PainelPage from "./pages/PainelPage";
 import DoacaoPage from "./pages/DoacaoPage";
+import EstoquePage from "./pages/EstoquePage";
+import DarSaidaPage from "./pages/DarSaidaPage";
 import EmConstrucaoPage from "./pages/EmConstrucaoPage";
 
 export default function App() {
@@ -22,9 +24,9 @@ export default function App() {
               <Route path="/" element={<PainelPage />} />
 
               {/* Telas ainda não feitas: troque o EmConstrucaoPage pela tela real. */}
-              <Route path="/estoque" element={<EmConstrucaoPage />} />
+              <Route path="/estoque" element={<EstoquePage />} />
               <Route path="/doacao" element={<DoacaoPage />} />
-              <Route path="/saida" element={<EmConstrucaoPage />} />
+              <Route path="/saida" element={<DarSaidaPage />} />
               <Route path="/itens" element={<EmConstrucaoPage />} />
               <Route path="/doadores" element={<EmConstrucaoPage />} />
               <Route path="/historico" element={<EmConstrucaoPage />} />

@@ -1,3 +1,6 @@
+/* Estilos compartilhados das telas com formulário (doação, saída, itens, doadores...).
+   Para usar numa tela nova: import "../styles/formularios.css"; */
+
 .pagina-form {
   display: flex;
   flex-direction: column;
@@ -237,4 +240,48 @@ textarea.entrada {
   .form__acoes .btn {
     width: 100%;
   }
+}
+
+/* Extras usados nas telas de Estoque e Dar saída */
+.btn--pequeno {
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+
+.link-botao {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent-blue);
+  font-size: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Caixa de marcar (ex.: "Este item tem data de validade") */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-accent-orange);
 }
