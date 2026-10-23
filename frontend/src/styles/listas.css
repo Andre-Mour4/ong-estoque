@@ -1,0 +1,157 @@
+/* Estilos das telas de lista com cadastro (Itens, Doadores...).
+   Uso: import "../styles/listas.css"; (junto com formularios.css e selos.css) */
+
+.pagina-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pagina-lista__intro {
+  margin: 0;
+  color: var(--color-navy-soft);
+  line-height: 1.5;
+}
+
+/* Barra de busca + filtro + botão de novo cadastro */
+.barra-filtros {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  align-items: end;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 28px -16px rgba(29, 53, 87, 0.35);
+}
+
+@media (max-width: 760px) {
+  .barra-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .barra-filtros .btn {
+    width: 100%;
+  }
+}
+
+.registros-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--color-navy-soft);
+}
+
+/* Lista de registros */
+.registros {
+  margin: 0;
+  padding: 6px 18px;
+  list-style: none;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 28px -16px rgba(29, 53, 87, 0.35);
+  transition: opacity 0.15s ease;
+}
+
+.registros--carregando {
+  opacity: 0.6;
+}
+
+.registro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  padding: 14px 0;
+  border-top: 1px solid #eee6d6;
+}
+
+.registro:first-child {
+  border-top: none;
+}
+
+.registro__principal {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.registro__principal > span {
+  font-size: 0.85rem;
+  color: var(--color-navy-soft);
+}
+
+.registro__selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.registro__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Cartão de "nada encontrado" */
+.vazio-cartao {
+  padding: 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 28px -16px rgba(29, 53, 87, 0.35);
+}
+
+.vazio-cartao h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-titulo);
+  font-size: 1.25rem;
+}
+
+.vazio-cartao p {
+  margin: 0;
+  color: var(--color-navy-soft);
+}
+
+/* Botão de ação perigosa (desativar, apagar) */
+.btn--perigo {
+  border-color: #a8332a;
+  color: #a8332a;
+}
+
+.btn--perigo:hover:not(:disabled) {
+  background: #fbe3e0;
+}
+
+.btn--perigo-cheio {
+  border-color: #a8332a;
+  background: #a8332a;
+  color: var(--color-white);
+}
+
+.btn--perigo-cheio:hover:not(:disabled) {
+  background: #8f2a22;
+}
+
+.selo--neutro {
+  background: #eceff3;
+  color: #4a5568;
+}
+
+/* Confirmação dentro do diálogo */
+.confirmacao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.confirmacao p {
+  margin: 0;
+  line-height: 1.5;
+}

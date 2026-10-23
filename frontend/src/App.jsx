@@ -7,6 +7,8 @@ import PainelPage from "./pages/PainelPage";
 import DoacaoPage from "./pages/DoacaoPage";
 import EstoquePage from "./pages/EstoquePage";
 import DarSaidaPage from "./pages/DarSaidaPage";
+import ItensPage from "./pages/ItensPage";
+import DoadoresPage from "./pages/DoadoresPage";
 import EmConstrucaoPage from "./pages/EmConstrucaoPage";
 
 export default function App() {
@@ -27,8 +29,8 @@ export default function App() {
               <Route path="/estoque" element={<EstoquePage />} />
               <Route path="/doacao" element={<DoacaoPage />} />
               <Route path="/saida" element={<DarSaidaPage />} />
-              <Route path="/itens" element={<EmConstrucaoPage />} />
-              <Route path="/doadores" element={<EmConstrucaoPage />} />
+              <Route path="/itens" element={<ItensPage />} />
+              <Route path="/doadores" element={<DoadoresPage />} />
               <Route path="/historico" element={<EmConstrucaoPage />} />
               <Route path="/conta" element={<EmConstrucaoPage />} />
 
