@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./LoginPage.css";
 import backgroundImage from "../assets/login-background.png";
@@ -94,6 +94,13 @@ export default function LoginPage() {
             {enviando ? "Entrando..." : "Entrar"}
           </button>
         </form>
+
+        <p className="login-legal">
+          Acesso restrito a pessoas autorizadas pela ONG.
+          <br />
+          <Link to="/privacidade">Política de Privacidade</Link> ·{" "}
+          <Link to="/termos">Termos de Uso</Link>
+        </p>
       </main>
     </div>
   );

@@ -260,3 +260,28 @@
     transition: none;
   }
 }
+
+/* ---------- Acessibilidade: pular para o conteúdo ----------
+   Link invisível que aparece ao apertar Tab, para quem navega pelo teclado
+   não precisar passar pelo menu em toda tela. */
+
+.pular-conteudo {
+  position: absolute;
+  top: -64px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pular-conteudo:focus {
+  top: 12px;
+}
+
+.app-conteudo:focus {
+  outline: none;
+}

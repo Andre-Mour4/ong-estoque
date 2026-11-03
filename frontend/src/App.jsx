@@ -9,6 +9,8 @@ import EstoquePage from "./pages/EstoquePage";
 import DarSaidaPage from "./pages/DarSaidaPage";
 import ItensPage from "./pages/ItensPage";
 import DoadoresPage from "./pages/DoadoresPage";
+import PoliticaPrivacidadePage from "./pages/PoliticaPrivacidadePage";
+import TermosUsoPage from "./pages/TermosUsoPage";
 import EmConstrucaoPage from "./pages/EmConstrucaoPage";
 
 export default function App() {
@@ -16,8 +18,10 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Pública */}
+          {/* Públicas */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/privacidade" element={<PoliticaPrivacidadePage />} />
+          <Route path="/termos" element={<TermosUsoPage />} />
 
           {/* Telas internas: só entra quem está logado, dentro do AppLayout
               (barra do topo + menu ☰). */}

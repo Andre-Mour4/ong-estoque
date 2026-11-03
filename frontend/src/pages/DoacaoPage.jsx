@@ -388,6 +388,9 @@ export default function DoacaoPage() {
               onChange={(e) => atualizar("observacao", e.target.value)}
               disabled={enviando}
             />
+            <p className="campo__ajuda">
+              Não registre dados pessoais de pessoas atendidas.
+            </p>
           </div>
 
           <div className="form__acoes">

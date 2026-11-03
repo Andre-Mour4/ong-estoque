@@ -429,7 +429,7 @@ export default function DarSaidaPage() {
               id="destino"
               type="text"
               className="entrada"
-              placeholder="Ex.: família da Rua das Flores"
+              placeholder="Ex.: Entrega a família, evento da ONG"
               maxLength={160}
               value={form.destino}
               onChange={(e) => atualizar("destino", e.target.value)}
@@ -452,6 +452,10 @@ export default function DarSaidaPage() {
                 </button>
               ))}
             </div>
+            <p className="campo__ajuda">
+              Use algo genérico, como &quot;Entrega a família&quot;. Não escreva nomes,
+              endereços ou dados de pessoas atendidas (principalmente crianças).
+            </p>
           </div>
 
           <div className="campo">
@@ -466,6 +470,9 @@ export default function DarSaidaPage() {
               onChange={(e) => atualizar("observacao", e.target.value)}
               disabled={enviando}
             />
+            <p className="campo__ajuda">
+              Não registre dados pessoais de pessoas atendidas.
+            </p>
           </div>
 
           <div className="form__acoes">

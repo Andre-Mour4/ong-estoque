@@ -143,6 +143,9 @@ function FormularioDoador({ doador, aoSalvar, aoCancelar }) {
           autoComplete="off"
         />
         <ErroCampo id="erro-doador-contato" texto={erros.contato} />
+        <p className="campo__ajuda">
+          Use só telefone ou e-mail de contato. Não informe CPF, RG nem endereço.
+        </p>
       </div>
 
       <div className="form__acoes">

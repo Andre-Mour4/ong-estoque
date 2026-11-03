@@ -1,4 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@400;500;600&display=swap");
+/* Fontes hospedadas no próprio sistema (pacotes @fontsource): nada é pedido ao Google,
+   então o IP de quem usa o sistema não vai para terceiros. Licença das fontes: SIL OFL. */
+@import "@fontsource/baloo-2/600.css";
+@import "@fontsource/baloo-2/700.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
 
 /* Cores e fontes do projeto (baseadas na identidade visual da ONG).
    Nas telas novas, use sempre estas variáveis: var(--color-navy), etc. */
@@ -11,6 +17,9 @@
   --color-accent-orange: #f4a63c;
   --color-white: #ffffff;
   --color-error: #d9483c;
+
+  /* Azul para TEXTO de links (o azul acima é claro demais para ler como texto). */
+  --color-link: #1f5a99;
 
   /* Status de validade dos lotes (veja docs/API.md) */
   --color-status-vencido: #d9483c;
@@ -43,4 +52,24 @@ body {
 button,
 input {
   font-family: inherit;
+}
+
+/* ---------- Acessibilidade: contraste ----------
+   Corrigem cores que ficavam abaixo do mínimo de leitura (WCAG AA, 4,5:1).
+   O "body" na frente garante que valem sobre as regras de cada tela. */
+
+/* Links em texto: azul escuro em vez do azul claro */
+body .campo__ajuda a,
+body .painel__ver-todos,
+body .painel__guia a,
+body .estoque__vazio a,
+body .link-botao,
+body .pagina-form__intro a,
+body .estoque__intro a {
+  color: var(--color-link);
+}
+
+/* Botão "Entrar": texto azul-marinho sobre o laranja (branco sobre laranja era ilegível) */
+body .login-button {
+  color: var(--color-navy);
 }

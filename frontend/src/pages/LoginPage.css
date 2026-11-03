@@ -120,3 +120,16 @@
     border-radius: 18px;
   }
 }
+
+/* Aviso de acesso restrito e links dos textos legais */
+.login-legal {
+  margin: 22px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--color-navy-soft);
+}
+
+.login-legal a {
+  color: var(--color-link);
+  font-weight: 600;
+}

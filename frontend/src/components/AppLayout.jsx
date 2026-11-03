@@ -21,8 +21,15 @@ export default function AppLayout() {
   const [menuAberto, setMenuAberto] = useState(false);
   const botaoMenuRef = useRef(null);
   const botaoFecharRef = useRef(null);
+  const menuRef = useRef(null);
 
   const ehAdmin = usuario.perfil === "admin";
+
+  // O título da aba do navegador acompanha a tela (ajuda quem usa leitor de tela).
+  useEffect(() => {
+    const titulo = tituloDaTela(pathname);
+    document.title = titulo ? `${titulo} · Sonho de um Menino` : "Sonho de um Menino";
+  }, [pathname]);
 
   // Com o menu aberto: Esc fecha, a página de trás não rola e o foco vai pro menu.
   useEffect(() => {
@@ -32,6 +39,21 @@ export default function AppLayout() {
       if (evento.key === "Escape") {
         setMenuAberto(false);
         botaoMenuRef.current?.focus();
+        return;
+      }
+      if (evento.key !== "Tab") return;
+
+      // Mantém o Tab dentro do menu enquanto ele está aberto.
+      const focaveis = menuRef.current?.querySelectorAll("a[href], button:not([disabled])");
+      if (!focaveis || focaveis.length === 0) return;
+      const primeiro = focaveis[0];
+      const ultimo = focaveis[focaveis.length - 1];
+      if (evento.shiftKey && document.activeElement === primeiro) {
+        evento.preventDefault();
+        ultimo.focus();
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault();
+        primeiro.focus();
       }
     }
 
@@ -52,6 +74,10 @@ export default function AppLayout() {
 
   return (
     <div className="app-shell">
+      <a className="pular-conteudo" href="#conteudo">
+        Pular para o conteúdo
+      </a>
+
       <header className="topbar">
         <button
           ref={botaoMenuRef}
@@ -90,6 +116,7 @@ export default function AppLayout() {
 
       <nav
         id="menu-lateral"
+        ref={menuRef}
         className={`menu ${menuAberto ? "menu--aberto" : ""}`}
         aria-label="Menu principal"
       >
@@ -145,13 +172,19 @@ export default function AppLayout() {
               {item.rotulo}
             </NavLink>
           ))}
+          <NavLink to="/privacidade" className="menu__link" onClick={() => setMenuAberto(false)}>
+            Política de Privacidade
+          </NavLink>
+          <NavLink to="/termos" className="menu__link" onClick={() => setMenuAberto(false)}>
+            Termos de Uso
+          </NavLink>
           <button type="button" className="menu__link menu__sair" onClick={sair}>
             Sair
           </button>
         </div>
       </nav>
 
-      <main className="app-conteudo">
+      <main id="conteudo" tabIndex={-1} className="app-conteudo">
         <Outlet />
       </main>
     </div>
