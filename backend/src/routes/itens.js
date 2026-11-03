@@ -1,6 +1,8 @@
 const express = require("express");
 const pool = require("../db");
 
+const { exigirPermissao } = require("../middleware/auth");
+
 const router = express.Router();
 
 // Consulta base: item + nome da categoria + estoque total (soma dos lotes).
@@ -123,7 +125,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST /api/itens -> cria um item
-router.post("/", async (req, res) => {
+router.post("/", exigirPermissao("gerenciar_itens"), async (req, res) => {
   const { erro, dados } = validarCorpo(req.body);
   if (erro) return res.status(400).json({ erro });
 
@@ -141,7 +143,7 @@ router.post("/", async (req, res) => {
 });
 
 // PUT /api/itens/:id -> edita um item (envie todos os campos)
-router.put("/:id", async (req, res) => {
+router.put("/:id", exigirPermissao("gerenciar_itens"), async (req, res) => {
   const id = lerId(req.params.id);
   if (!id) return res.status(400).json({ erro: "ID inválido." });
 
@@ -166,7 +168,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE /api/itens/:id -> desativa o item (não apaga, preserva o histórico)
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", exigirPermissao("gerenciar_itens"), async (req, res) => {
   const id = lerId(req.params.id);
   if (!id) return res.status(400).json({ erro: "ID inválido." });
 

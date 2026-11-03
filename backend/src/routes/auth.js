@@ -22,7 +22,7 @@ router.post("/login", async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT id, nome, email, perfil, ativo, senha_hash
+      `SELECT id, nome, email, perfil, ativo, senha_hash, permissoes, deve_trocar_senha
          FROM usuarios WHERE email = $1`,
       [email]
     );
@@ -50,6 +50,8 @@ router.post("/login", async (req, res) => {
         nome: usuario.nome,
         email: usuario.email,
         perfil: usuario.perfil,
+        permissoes: usuario.permissoes,
+        deve_trocar_senha: usuario.deve_trocar_senha,
       },
     });
   } catch (erro) {
@@ -81,8 +83,14 @@ router.post("/trocar-senha", autenticar, async (req, res) => {
       return res.status(400).json({ erro: "Senha atual incorreta." });
     }
 
+    if (senhaAtual === senhaNova) {
+      return res
+        .status(400)
+        .json({ erro: "A nova senha precisa ser diferente da atual." });
+    }
+
     const novoHash = await gerarHash(senhaNova);
-    await pool.query("UPDATE usuarios SET senha_hash = $1 WHERE id = $2", [
+    await pool.query("UPDATE usuarios SET senha_hash = $1, deve_trocar_senha = FALSE WHERE id = $2", [
       novoHash,
       req.usuario.id,
     ]);

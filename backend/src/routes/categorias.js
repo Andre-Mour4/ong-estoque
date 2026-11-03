@@ -1,6 +1,8 @@
 const express = require("express");
 const pool = require("../db");
 
+const { exigirPermissao } = require("../middleware/auth");
+
 const router = express.Router();
 
 // GET /api/categorias -> lista todas as categorias em ordem alfabética
@@ -17,7 +19,7 @@ router.get("/", async (req, res) => {
 });
 
 // POST /api/categorias  { "nome": "Medicamentos" } -> cria uma categoria
-router.post("/", async (req, res) => {
+router.post("/", exigirPermissao("gerenciar_itens"), async (req, res) => {
   const nome = String(req.body?.nome ?? "").trim();
 
   if (!nome) {

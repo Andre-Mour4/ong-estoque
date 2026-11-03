@@ -2,6 +2,8 @@
 
 Sistema web para organizar as doações recebidas pela ONG **Sonho de Um Menino**, com controle por data de validade, alertas de vencimento e busca/filtro rápido.
 
+Projeto de extensão (Práticas Extensionistas), desenvolvido em grupo, como continuação do chatbot de WhatsApp já em operação para a mesma ONG.
+
 ## 📌 Status
 
 | Parte | Situação |
@@ -98,7 +100,7 @@ psql -U postgres -c "CREATE DATABASE ong_estoque;"
 psql -U postgres -d ong_estoque -f backend/database/schema.sql
 ```
 
-> ⚠️ O `schema.sql` **apaga e recria** as tabelas. Use só em banco de desenvolvimento, nunca em um banco com dados reais.
+> O `schema.sql` é seguro: pode ser rodado de novo sem apagar nada. Para **zerar** o banco em desenvolvimento, rode antes o `backend/database/reset.sql` (⚠️ apaga tudo; nunca use em banco com dados reais). Se você criou o banco antes, rode também os arquivos de `backend/database/migrations/`, em ordem.
 
 ### 3. Configurar o backend
 
@@ -161,7 +163,7 @@ Ainda dentro de `backend/`:
 node scripts/criar-admin.js "Seu Nome" seuemail@exemplo.com SuaSenha123
 ```
 
-A senha precisa ter **no mínimo 8 caracteres**. Use só letras e números para o terminal não se confundir. Deve aparecer `Administrador criado:`. Esse e-mail e senha são o seu login no sistema.
+A senha precisa ter **no mínimo 8 caracteres**. Use só letras e números para o terminal não se confundir. Deve aparecer `Administrador criado:`. Esse e-mail e senha são o seu login no sistema. A senha é **temporária**: no primeiro acesso o sistema pede para trocá-la. Enquanto a tela de trocar senha não estiver pronta no frontend, acrescente `--sem-troca` ao final do comando (só em desenvolvimento).
 
 ### 5. Rodar o backend
 
@@ -278,7 +280,7 @@ Não resolveu? Mande um print do terminal no grupo.
 | Frente | Responsáveis |
 |---|---|
 | Liderança do projeto | André e Murilo |
-| Backend e deploy | *(a preencher)* |
+| Backend e deploy | André + *(a preencher)* |
 | Frontend | *(a preencher)* |
 
 > Projeto desenvolvido em grupo, para a ONG Sonho de Um Menino, nas Práticas Extensionistas.

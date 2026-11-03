@@ -9,15 +9,16 @@ API do sistema de gestão de estoque da ONG Sonho de Um Menino.
 ## Índice
 
 1. [Como usar](#como-usar)
-2. [Erros](#erros)
-3. [Auth (login)](#auth-login)
-4. [Categorias](#categorias)
-5. [Itens](#itens)
-6. [Doadores](#doadores)
-7. [Lotes](#lotes)
-8. [Movimentações](#movimentações)
-9. [Usuários (só admin)](#usuários-só-admin)
-10. [Dicas para o front](#dicas-para-o-front)
+2. [Permissões](#permissões)
+3. [Erros](#erros)
+4. [Auth (login)](#auth-login)
+5. [Categorias](#categorias)
+6. [Itens](#itens)
+7. [Doadores](#doadores)
+8. [Lotes](#lotes)
+9. [Movimentações](#movimentações)
+10. [Usuários (só admin)](#usuários-só-admin)
+11. [Dicas para o front](#dicas-para-o-front)
 
 ---
 
@@ -54,7 +55,7 @@ const API = "http://localhost:3001";
 const resposta = await fetch(`${API}/api/auth/login`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ email: "ong@gmail.com", senha: "ong12345" }),
+  body: JSON.stringify({ email: "seuemail@exemplo.com", senha: "SuaSenha123" }),
 });
 const { token, usuario } = await resposta.json();
 
@@ -75,6 +76,30 @@ const itens = await fetch(`${API}/api/itens?busca=arroz`, {
 
 ---
 
+## Permissões
+
+O perfil **`admin`** sempre pode tudo. Os demais usuários (`voluntario`) recebem **permissões** marcadas pelo administrador, e cada uma libera um grupo de ações. O servidor recusa com `403` o que não for permitido (esconder no menu não basta).
+
+| Permissão | O que libera |
+|---|---|
+| `registrar_doacao` | `POST /api/lotes` e `PUT /api/lotes/:id` |
+| `dar_saida` | `POST /api/movimentacoes` |
+| `gerenciar_itens` | `POST`, `PUT` e `DELETE` em `/api/itens` e `POST /api/categorias` |
+| `gerenciar_doadores` | `POST`, `PUT`, `DELETE` e `/anonimizar` em `/api/doadores`, **e ver o contato dos doadores** |
+| `ver_historico` | `GET /api/movimentacoes` e a lista de movimentações dentro de `GET /api/lotes/:id` |
+
+**Todo usuário logado** pode consultar: Painel (`/api/lotes/resumo`), `GET` de lotes, itens, categorias e doadores (sem o contato).
+
+**Só admin:** tudo de `/api/usuarios`.
+
+As permissões do usuário logado vêm no login e em `GET /api/auth/me` (`usuario.permissoes`). Use isso para esconder botões e telas.
+
+### Primeiro acesso (senha temporária)
+
+Todo usuário criado pelo admin, e todo usuário que teve a senha redefinida, tem `deve_trocar_senha: true`. Enquanto for `true`, **todas as rotas respondem `403`** com `{ "erro": "...", "codigo": "TROCAR_SENHA" }`, exceto `GET /api/auth/me` e `POST /api/auth/trocar-senha`. Fluxo no front: depois do login, se `usuario.deve_trocar_senha` for `true`, abrir só a tela de trocar senha; depois da troca, liberar o resto.
+
+---
+
 ## Erros
 
 Toda resposta de erro tem o mesmo formato, com uma mensagem pronta pra mostrar ao usuário:
@@ -87,7 +112,7 @@ Toda resposta de erro tem o mesmo formato, com uma mensagem pronta pra mostrar a
 |---|---|
 | `400` | Dado inválido ou faltando |
 | `401` | Sem token, token inválido/expirado ou usuário desativado |
-| `403` | Rota exclusiva de administrador |
+| `403` | Rota exclusiva de administrador, ação sem permissão ou troca de senha pendente (`"codigo": "TROCAR_SENHA"`) |
 | `404` | Registro não encontrado |
 | `409` | Conflito (ex.: nome duplicado) |
 | `500` | Erro interno do servidor |
@@ -106,7 +131,7 @@ Toda resposta de erro tem o mesmo formato, com uma mensagem pronta pra mostrar a
 ### `POST /api/auth/login`
 
 ```json
-{ "email": "ong@gmail.com", "senha": "ong12345" }
+{ "email": "seuemail@exemplo.com", "senha": "SuaSenha123" }
 ```
 
 Resposta `200`:
@@ -114,25 +139,29 @@ Resposta `200`:
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIs...",
-  "usuario": { "id": 1, "nome": "ONG", "email": "ong@gmail.com", "perfil": "admin" }
+  "usuario": {
+    "id": 1, "nome": "Seu Nome", "email": "seuemail@exemplo.com", "perfil": "admin",
+    "permissoes": ["registrar_doacao", "dar_saida", "gerenciar_itens", "gerenciar_doadores", "ver_historico"],
+    "deve_trocar_senha": false
+  }
 }
 ```
 
-`perfil` é `"admin"` ou `"voluntario"`. Erro `401`: `"E-mail ou senha incorretos."`
+`perfil` é `"admin"` ou `"voluntario"`. Se `deve_trocar_senha` for `true`, a pessoa precisa trocar a senha antes de usar o sistema (veja [Primeiro acesso](#primeiro-acesso-senha-temporária)). Erro `401`: `"E-mail ou senha incorretos."`
 
 ### `GET /api/auth/me`
 
-Resposta `200`: `{ "usuario": { "id": 1, "nome": "ONG", "email": "ong@gmail.com", "perfil": "admin" } }`
+Resposta `200`: `{ "usuario": { ... } }`, com os mesmos campos do login (inclusive `permissoes` e `deve_trocar_senha`).
 
 Serve para validar a sessão quando o app abre (se der `401`, mandar pro login).
 
 ### `POST /api/auth/trocar-senha`
 
 ```json
-{ "senha_atual": "ong12345", "senha_nova": "novaSenha123" }
+{ "senha_atual": "SuaSenha123", "senha_nova": "novaSenha123" }
 ```
 
-Resposta `200`: `{ "mensagem": "Senha alterada." }`. A senha nova precisa ter de 8 a 72 caracteres.
+Resposta `200`: `{ "mensagem": "Senha alterada." }`. A senha nova precisa ter de 8 a 72 caracteres e ser **diferente da atual**. Depois da troca, `deve_trocar_senha` volta a `false`. Esta rota funciona mesmo com a senha temporária pendente.
 
 ---
 
@@ -223,6 +252,8 @@ Todas exigem login.
 
 Filtros opcionais: `?busca=mercado` e `?tipo=empresa`.
 
+Quem não tem a permissão `gerenciar_doadores` recebe `"contato": null` (só o necessário, LGPD). Criar, editar, apagar e anonimizar exigem `gerenciar_doadores`.
+
 ### `POST` e `PUT`
 
 | Campo | Obrigatório | Descrição |
@@ -232,6 +263,10 @@ Filtros opcionais: `?busca=mercado` e `?tipo=empresa`.
 | `contato` | não | Até 160 caracteres (telefone, e-mail...) |
 
 No `PUT`, envie todos os campos. `DELETE` em doador que já tem lotes responde `409`: `"Este doador tem lotes vinculados e não pode ser apagado."`
+
+### `POST /api/doadores/:id/anonimizar`
+
+Para pedidos de eliminação (LGPD) de quem já tem doações: troca o nome por `"Doador anonimizado"` e apaga o contato. As doações continuam ligadas a ele. Responde com o doador; já anonimizado dá `409`. **Não dá para desfazer.** Textos digitados em observações e destinos não são alterados.
 
 ---
 
@@ -312,7 +347,7 @@ Resposta `200` (só conta lotes com estoque):
 
 ### `GET /api/lotes/:id`
 
-Devolve o lote (mesmo formato acima, com `status` calculado na janela padrão de 30 dias) mais o histórico:
+Devolve o lote (mesmo formato acima, com `status` calculado na janela padrão de 30 dias) mais o histórico. A lista `movimentacoes` só vem preenchida para quem tem a permissão `ver_historico`; para os demais vem vazia:
 
 ```json
 {
@@ -393,6 +428,8 @@ Regras:
 
 ### `GET /api/movimentacoes`
 
+Exige a permissão `ver_historico` (sem ela, `403`). O Painel só deve chamar esta rota para quem tem a permissão.
+
 Filtros opcionais: `lote_id`, `item_id`, `tipo` (`entrada` ou `saida`), `data_inicio` e `data_fim` (`AAAA-MM-DD`), `limite` (padrão 100, máximo 500).
 
 ```json
@@ -417,13 +454,16 @@ Filtros opcionais: `lote_id`, `item_id`, `tipo` (`entrada` ou `saida`), `data_in
 
 ## Usuários (só admin)
 
-Exigem login **e** perfil `admin`. Voluntário recebe `403`.
+Exigem login **e** perfil `admin`. Quem não é admin recebe `403`.
 
 | Método | Rota | Descrição |
 |---|---|---|
+| `GET` | `/api/usuarios/permissoes` | Lista as permissões e os modelos (para montar as caixinhas) |
 | `GET` | `/api/usuarios` | Lista usuários |
 | `POST` | `/api/usuarios` | Cria um usuário |
-| `PUT` | `/api/usuarios/:id` | Edita (inclusive desativa) |
+| `PUT` | `/api/usuarios/:id` | Edita nome, perfil, ativo e permissões (inclusive desativa) |
+| `POST` | `/api/usuarios/:id/redefinir-senha` | Gera uma nova senha temporária |
+| `POST` | `/api/usuarios/:id/anonimizar` | Remove os dados pessoais (LGPD) |
 
 Não existe `DELETE`: para desligar alguém, envie `"ativo": false`. A senha nunca é devolvida.
 
@@ -432,24 +472,62 @@ Não existe `DELETE`: para desligar alguém, envie `"ativo": false`. A senha nun
 ```json
 {
   "id": 2, "nome": "Maria", "email": "maria@exemplo.com",
-  "perfil": "voluntario", "ativo": true, "criado_em": "2026-10-11T14:00:00.000Z"
+  "perfil": "voluntario", "ativo": true,
+  "permissoes": ["registrar_doacao", "dar_saida"],
+  "deve_trocar_senha": true, "anonimizado_em": null,
+  "criado_em": "2026-10-11T14:00:00.000Z"
 }
 ```
+
+### `GET /api/usuarios/permissoes`
+
+```json
+{
+  "permissoes": [
+    { "chave": "registrar_doacao", "rotulo": "Registrar doação" },
+    { "chave": "dar_saida", "rotulo": "Dar saída" }
+  ],
+  "modelos": {
+    "administrador": ["registrar_doacao", "dar_saida", "gerenciar_itens", "gerenciar_doadores", "ver_historico"],
+    "voluntario": ["registrar_doacao", "dar_saida"],
+    "consulta": []
+  }
+}
+```
+
+Use `permissoes` para desenhar as caixinhas e `modelos` para os botões de modelo pronto ("Voluntário", "Somente consulta").
 
 ### `POST /api/usuarios`
 
 | Campo | Obrigatório | Descrição |
 |---|---|---|
 | `nome` | sim | Até 120 caracteres |
-| `email` | sim | E-mail válido, único |
-| `senha` | sim | De 8 a 72 caracteres |
+| `email` | sim | E-mail válido, único (guardado em minúsculas) |
 | `perfil` | não | `"voluntario"` (padrão) ou `"admin"` |
+| `permissoes` | não | Lista de chaves. Omitida = modelo "voluntário". Ignorada para `admin` (recebe todas) |
+| `senha` | não | De 8 a 72 caracteres. **Omitida = o sistema gera uma senha temporária** |
 
-Responde `201`. E-mail repetido dá `409`.
+Responde `201` com o usuário. Quando a senha foi gerada, vem também `"senha_temporaria"`: **aparece só nesta resposta**, então mostre na tela para o admin copiar. O usuário novo sempre começa com `deve_trocar_senha: true`. E-mail repetido dá `409`; permissão inexistente dá `400`.
 
 ### `PUT /api/usuarios/:id`
 
-Envie `nome`, `perfil` e `ativo` (se omitido, vira `true`). `senha` é opcional: só vai se quiser redefinir a senha da pessoa. Um admin não pode desativar nem rebaixar o próprio usuário (`400`).
+Envie `nome`, `perfil` e `ativo` (se omitido, vira `true`). `permissoes` é opcional: omitida, mantém as atuais. A senha **não** muda aqui.
+
+Regras (`400`): o admin não pode desativar nem rebaixar o próprio usuário; sempre precisa sobrar pelo menos um admin ativo; usuário anonimizado não pode ser editado.
+
+### `POST /api/usuarios/:id/redefinir-senha`
+
+Corpo opcional: `{ "senha": "..." }`. Sem `senha`, gera uma temporária.
+
+```json
+{ "mensagem": "Senha redefinida. A pessoa deverá trocá-la no próximo acesso.", "senha_temporaria": "kT7mQx2NpR9s" }
+```
+
+A pessoa precisa trocar a senha no próximo acesso. Não vale para o próprio admin (`400`: use "Minha conta") nem para usuário anonimizado.
+
+### `POST /api/usuarios/:id/anonimizar`
+
+Troca o nome por `"Usuário anonimizado"`, o e-mail por um endereço inválido, apaga a senha, tira as permissões e desativa. O histórico continua, mas "quem fez" passa a aparecer como "Usuário anonimizado". **Não dá para desfazer.** Erros: o próprio usuário (`400`), o último admin ativo (`400`), já anonimizado (`409`).
 
 ---
 
@@ -459,5 +537,7 @@ Envie `nome`, `perfil` e `ativo` (se omitido, vira `true`). `senha` é opcional:
 - **Trate o `401` em um lugar só.** Se qualquer chamada voltar `401`, apague o token e mande o usuário pro login.
 - **Mostre a mensagem do campo `erro`** direto na tela: ela já vem em português e pronta pro usuário.
 - **Painel inicial:** use `GET /api/lotes/resumo` para os cards de vencidos/vencendo e `GET /api/lotes?status=vencendo` (e `status=vencido`) para as listas.
-- **Telas de admin:** esconda o menu "Usuários" para `perfil !== "admin"` (o `perfil` vem no login e no `/api/auth/me`). A API já bloqueia de qualquer jeito.
+- **Telas e botões por permissão:** use `usuario.permissoes` (e `perfil === "admin"`, que pode tudo) para esconder menus e botões. A API já bloqueia de qualquer jeito.
+- **Primeiro acesso:** se `usuario.deve_trocar_senha` for `true`, mostre só a tela de trocar senha. Qualquer outra chamada volta `403` com `"codigo": "TROCAR_SENHA"`.
+- **Senha temporária:** ao criar usuário ou redefinir senha, a API devolve `senha_temporaria` uma única vez. Mostre com um botão de copiar e avise que ela não será exibida de novo.
 - **Teste rápido sem o front:** extensão **Thunder Client** do VS Code, ou o PowerShell (`Invoke-RestMethod`), mandando o cabeçalho `Authorization`.

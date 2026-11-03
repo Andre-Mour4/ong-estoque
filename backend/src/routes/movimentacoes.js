@@ -7,6 +7,8 @@ const {
   comTransacao,
 } = require("../utils/helpers");
 
+const { exigirPermissao } = require("../middleware/auth");
+
 const router = express.Router();
 
 const TIPOS = ["entrada", "saida"];
@@ -17,7 +19,7 @@ const TIPOS = ["entrada", "saida"];
 // Doação nova NÃO é feita aqui: ela vira um lote novo (POST /api/lotes).
 // "entrada" aqui serve para estornar uma saída lançada errado e nunca
 // ultrapassa a quantidade inicial do lote.
-router.post("/", async (req, res) => {
+router.post("/", exigirPermissao("dar_saida"), async (req, res) => {
   const body = req.body;
 
   const loteId = lerId(body?.lote_id);
@@ -117,7 +119,7 @@ router.post("/", async (req, res) => {
 
 // GET /api/movimentacoes -> histórico (mais recentes primeiro)
 // Filtros: lote_id, item_id, tipo, data_inicio, data_fim (AAAA-MM-DD), limite (padrão 100, máx. 500)
-router.get("/", async (req, res) => {
+router.get("/", exigirPermissao("ver_historico"), async (req, res) => {
   const condicoes = [];
   const params = [];
 

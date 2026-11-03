@@ -8,6 +8,9 @@ const {
   comTransacao,
 } = require("../utils/helpers");
 
+const { exigirPermissao } = require("../middleware/auth");
+const { temPermissao } = require("../utils/permissoes");
+
 const router = express.Router();
 
 // Um lote "vence em breve" se a validade cai dentro desta janela (em dias).
@@ -162,7 +165,9 @@ router.get("/:id", async (req, res) => {
         ORDER BY m.criado_em DESC, m.id DESC`,
       [id]
     );
-    res.json({ ...lote, movimentacoes: movimentacoes.rows });
+    // O histórico do lote só aparece para quem pode ver o histórico.
+    const podeVerHistorico = temPermissao(req.usuario, "ver_historico");
+    res.json({ ...lote, movimentacoes: podeVerHistorico ? movimentacoes.rows : [] });
   } catch (erro) {
     console.error("Erro ao buscar lote:", erro.message);
     res.status(500).json({ erro: "Erro ao buscar lote." });
@@ -170,7 +175,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST /api/lotes -> registra uma doação (cria o lote + a movimentação de entrada)
-router.post("/", async (req, res) => {
+router.post("/", exigirPermissao("registrar_doacao"), async (req, res) => {
   const body = req.body;
 
   const itemId = lerId(body?.item_id);
@@ -262,7 +267,7 @@ router.post("/", async (req, res) => {
 
 // PUT /api/lotes/:id -> corrige doador, validade e observação do lote.
 // Quantidades NÃO mudam aqui: use /api/movimentacoes.
-router.put("/:id", async (req, res) => {
+router.put("/:id", exigirPermissao("registrar_doacao"), async (req, res) => {
   const id = lerId(req.params.id);
   if (!id) return res.status(400).json({ erro: "ID inválido." });
 

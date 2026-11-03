@@ -2,7 +2,17 @@ const express = require("express");
 const pool = require("../db");
 const { lerId } = require("../utils/helpers");
 
+const { exigirPermissao } = require("../middleware/auth");
+const { temPermissao } = require("../utils/permissoes");
+
 const router = express.Router();
+
+// Quem não gerencia doadores vê o nome, mas não o contato (só o necessário, LGPD).
+function aplicarPrivacidade(doador, req) {
+  return temPermissao(req.usuario, "gerenciar_doadores")
+    ? doador
+    : { ...doador, contato: null };
+}
 
 const TIPOS = ["pessoa_fisica", "empresa", "campanha"];
 
@@ -55,7 +65,7 @@ router.get("/", async (req, res) => {
       `SELECT id, nome, tipo, contato FROM doadores ${where} ORDER BY nome`,
       params
     );
-    res.json(rows);
+    res.json(rows.map((doador) => aplicarPrivacidade(doador, req)));
   } catch (erro) {
     console.error("Erro ao listar doadores:", erro.message);
     res.status(500).json({ erro: "Erro ao listar doadores." });
@@ -73,7 +83,7 @@ router.get("/:id", async (req, res) => {
       [id]
     );
     if (!rows[0]) return res.status(404).json({ erro: "Doador não encontrado." });
-    res.json(rows[0]);
+    res.json(aplicarPrivacidade(rows[0], req));
   } catch (erro) {
     console.error("Erro ao buscar doador:", erro.message);
     res.status(500).json({ erro: "Erro ao buscar doador." });
@@ -81,7 +91,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST /api/doadores -> cria um doador
-router.post("/", async (req, res) => {
+router.post("/", exigirPermissao("gerenciar_doadores"), async (req, res) => {
   const { erro, dados } = validarCorpo(req.body);
   if (erro) return res.status(400).json({ erro });
 
@@ -99,7 +109,7 @@ router.post("/", async (req, res) => {
 });
 
 // PUT /api/doadores/:id -> edita um doador (envie todos os campos)
-router.put("/:id", async (req, res) => {
+router.put("/:id", exigirPermissao("gerenciar_doadores"), async (req, res) => {
   const id = lerId(req.params.id);
   if (!id) return res.status(400).json({ erro: "ID inválido." });
 
@@ -121,7 +131,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE /api/doadores/:id -> apaga, só se não tiver lotes vinculados
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", exigirPermissao("gerenciar_doadores"), async (req, res) => {
   const id = lerId(req.params.id);
   if (!id) return res.status(400).json({ erro: "ID inválido." });
 
@@ -144,6 +154,33 @@ router.delete("/:id", async (req, res) => {
   } catch (erro) {
     console.error("Erro ao apagar doador:", erro.message);
     res.status(500).json({ erro: "Erro ao apagar doador." });
+  }
+});
+
+// POST /api/doadores/:id/anonimizar -> remove os dados pessoais (LGPD) mantendo o histórico
+// As doações continuam ligadas ao doador, que passa a aparecer como "Doador anonimizado".
+router.post("/:id/anonimizar", exigirPermissao("gerenciar_doadores"), async (req, res) => {
+  const id = lerId(req.params.id);
+  if (!id) return res.status(400).json({ erro: "ID inválido." });
+
+  try {
+    const { rows } = await pool.query(
+      `UPDATE doadores
+          SET nome = 'Doador anonimizado', contato = NULL, anonimizado_em = NOW()
+        WHERE id = $1 AND anonimizado_em IS NULL
+        RETURNING id, nome, tipo, contato`,
+      [id]
+    );
+    if (rows[0]) return res.json(rows[0]);
+
+    const existe = await pool.query("SELECT 1 FROM doadores WHERE id = $1", [id]);
+    if (existe.rowCount === 0) {
+      return res.status(404).json({ erro: "Doador não encontrado." });
+    }
+    res.status(409).json({ erro: "Este doador já foi anonimizado." });
+  } catch (erro) {
+    console.error("Erro ao anonimizar doador:", erro.message);
+    res.status(500).json({ erro: "Erro ao anonimizar doador." });
   }
 });
 
