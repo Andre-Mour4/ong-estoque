@@ -1,0 +1,12 @@
+.hist-grupos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+
+.hist-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  align-items: end;
+  gap: 12px;
+}

@@ -9,6 +9,7 @@ import EstoquePage from "./pages/EstoquePage";
 import DarSaidaPage from "./pages/DarSaidaPage";
 import ItensPage from "./pages/ItensPage";
 import DoadoresPage from "./pages/DoadoresPage";
+import HistoricoPage from "./pages/HistoricoPage";
 import PoliticaPrivacidadePage from "./pages/PoliticaPrivacidadePage";
 import TermosUsoPage from "./pages/TermosUsoPage";
 import EmConstrucaoPage from "./pages/EmConstrucaoPage";
@@ -35,7 +36,7 @@ export default function App() {
               <Route path="/saida" element={<DarSaidaPage />} />
               <Route path="/itens" element={<ItensPage />} />
               <Route path="/doadores" element={<DoadoresPage />} />
-              <Route path="/historico" element={<EmConstrucaoPage />} />
+              <Route path="/historico" element={<HistoricoPage />} />
               <Route path="/conta" element={<EmConstrucaoPage />} />
 
               {/* Só administrador */}
