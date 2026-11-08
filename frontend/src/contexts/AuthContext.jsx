@@ -64,8 +64,23 @@ export function AuthProvider({ children }) {
     setUsuario(dados.usuario);
   }, []);
 
+  // Busca de novo os dados de quem está logado (ex.: depois de trocar a senha temporária).
+  const recarregarUsuario = useCallback(async () => {
+    const dados = await api("/api/auth/me");
+    setUsuario(dados.usuario);
+  }, []);
+
+  // Administrador pode tudo; os demais, só o que o admin liberou.
+  const podeFazer = useCallback(
+    (permissao) =>
+      usuario?.perfil === "admin" || Boolean(usuario?.permissoes?.includes(permissao)),
+    [usuario]
+  );
+
   return (
-    <AuthContext.Provider value={{ usuario, carregando, entrar, sair }}>
+    <AuthContext.Provider
+      value={{ usuario, carregando, entrar, sair, recarregarUsuario, podeFazer }}
+    >
       {children}
     </AuthContext.Provider>
   );

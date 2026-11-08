@@ -10,17 +10,20 @@ const MS_DIA = 24 * 60 * 60 * 1000;
 const ACOES = [
   {
     para: "/doacao",
+    permissao: "registrar_doacao",
     titulo: "Registrar doação",
     texto: "Chegou algo novo? Cadastre o lote aqui.",
     destaque: true,
   },
   {
     para: "/saida",
+    permissao: "dar_saida",
     titulo: "Dar saída",
     texto: "Entregou algo? Baixe do estoque.",
   },
   {
     para: "/itens",
+    permissao: "gerenciar_itens",
     titulo: "Novo item",
     texto: "Primeiro cadastre o produto.",
   },
@@ -102,7 +105,8 @@ function fraseDeAtencao(resumo) {
 }
 
 export default function PainelPage() {
-  const { usuario } = useAuth();
+  const { usuario, podeFazer } = useAuth();
+  const podeVerHistorico = podeFazer("ver_historico");
   const [dados, setDados] = useState(null); // { resumo, lotes, movimentacoes }
   const [erro, setErro] = useState("");
   const [tentativa, setTentativa] = useState(0);
@@ -119,7 +123,10 @@ export default function PainelPage() {
     Promise.all([
       api("/api/lotes/resumo"),
       api("/api/lotes"),
-      api(`/api/movimentacoes?data_inicio=${dataInicio}&limite=500`),
+      // Sem a permissão "ver_historico" a API recusaria (403), então nem pergunta.
+      podeVerHistorico
+        ? api(`/api/movimentacoes?data_inicio=${dataInicio}&limite=500`)
+        : Promise.resolve([]),
     ])
       .then(([resumo, lotes, movimentacoes]) => {
         if (ativo) setDados({ resumo, lotes, movimentacoes });
@@ -131,7 +138,7 @@ export default function PainelPage() {
     return () => {
       ativo = false;
     };
-  }, [tentativa]);
+  }, [tentativa, podeVerHistorico]);
 
   function tentarDeNovo() {
     setErro("");
@@ -169,6 +176,7 @@ export default function PainelPage() {
 
   const { resumo, lotes, movimentacoes } = dados;
   const cards = montarCards(resumo);
+  const acoesVisiveis = ACOES.filter((acao) => podeFazer(acao.permissao));
   const urgentes = lotes
     .filter((lote) => lote.status === "vencido" || lote.status === "vencendo")
     .slice(0, 6);
@@ -250,14 +258,16 @@ export default function PainelPage() {
               >
                 Situação dos lotes
               </button>
-              <button
-                type="button"
-                className="aba"
-                aria-pressed={visao === "movimentacoes"}
-                onClick={() => setVisao("movimentacoes")}
-              >
-                Entradas e saídas
-              </button>
+              {podeVerHistorico && (
+                <button
+                  type="button"
+                  className="aba"
+                  aria-pressed={visao === "movimentacoes"}
+                  onClick={() => setVisao("movimentacoes")}
+                >
+                  Entradas e saídas
+                </button>
+              )}
             </div>
           </div>
 
@@ -278,7 +288,12 @@ export default function PainelPage() {
         <section className="cartao">
           <h3>O que você quer fazer?</h3>
           <div className="acoes">
-            {ACOES.map((acao) => (
+            {acoesVisiveis.length === 0 && (
+              <p className="painel__vazio">
+                Você tem acesso para consultar o Painel e o Estoque.
+              </p>
+            )}
+            {acoesVisiveis.map((acao) => (
               <Link
                 key={acao.para}
                 to={acao.para}
@@ -328,6 +343,7 @@ export default function PainelPage() {
           )}
         </section>
 
+        {podeVerHistorico && (
         <section className="cartao">
           <div className="cartao__topo">
             <h3>Últimas movimentações</h3>
@@ -362,6 +378,7 @@ export default function PainelPage() {
             </ul>
           )}
         </section>
+        )}
       </div>
     </div>
   );

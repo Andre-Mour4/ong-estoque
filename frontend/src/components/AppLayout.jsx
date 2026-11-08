@@ -16,7 +16,7 @@ function iniciais(nome) {
 // Moldura de todas as telas internas: barra do topo + menu ☰ + fundo.
 // As telas aparecem dentro dela, no lugar do <Outlet />.
 export default function AppLayout() {
-  const { usuario, sair } = useAuth();
+  const { usuario, sair, podeFazer } = useAuth();
   const { pathname } = useLocation();
   const [menuAberto, setMenuAberto] = useState(false);
   const botaoMenuRef = useRef(null);
@@ -24,6 +24,14 @@ export default function AppLayout() {
   const menuRef = useRef(null);
 
   const ehAdmin = usuario.perfil === "admin";
+
+  // Menu só com as telas que a pessoa pode usar (grupos vazios somem).
+  const gruposVisiveis = GRUPOS_MENU.filter((grupo) => !grupo.apenasAdmin || ehAdmin)
+    .map((grupo) => ({
+      ...grupo,
+      itens: grupo.itens.filter((item) => !item.permissao || podeFazer(item.permissao)),
+    }))
+    .filter((grupo) => grupo.itens.length > 0);
 
   // O título da aba do navegador acompanha a tela (ajuda quem usa leitor de tela).
   useEffect(() => {
@@ -134,7 +142,7 @@ export default function AppLayout() {
         </div>
 
         <div className="menu__lista">
-          {GRUPOS_MENU.filter((grupo) => !grupo.apenasAdmin || ehAdmin).map(
+          {gruposVisiveis.map(
             (grupo) => (
               <div className="menu__grupo" key={grupo.titulo ?? "principal"}>
                 {grupo.titulo && (
