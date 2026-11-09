@@ -9,8 +9,13 @@
 //   que veio do backend (pronta para mostrar na tela).
 // - Se a sessão expirar (401), desloga o usuário sozinho.
 
-// No deploy, defina VITE_API_URL com o endereço do backend.
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
+// Em desenvolvimento, a API fica em localhost:3001.
+// No deploy, defina VITE_API_URL com o endereço da API (ex.: https://minha-api.onrender.com).
+// Se ficar vazio em produção, as chamadas vão para o próprio endereço do site, o que
+// funciona quando o servidor do site repassa /api para a API (veja docs/DEPLOY.md).
+const API_URL = (
+  import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:3001" : "")
+).replace(/\/+$/, "");
 
 const CHAVE_TOKEN = "ong_estoque_token";
 
@@ -89,10 +94,12 @@ export async function api(
     if (resposta.status === 401 && autenticado && aoPerderSessao) {
       aoPerderSessao();
     }
-    throw new ErroApi(
-      dados?.erro ?? "Erro inesperado. Tente novamente.",
-      resposta.status
-    );
+    // 404 sem JSON = a chamada nem chegou na API (endereço da API mal configurado).
+    const mensagemPadrao =
+      dados === null && resposta.status === 404
+        ? "Não foi possível encontrar o servidor da API. Verifique a configuração do sistema (VITE_API_URL)."
+        : "Erro inesperado. Tente novamente.";
+    throw new ErroApi(dados?.erro ?? mensagemPadrao, resposta.status);
   }
 
   return dados;

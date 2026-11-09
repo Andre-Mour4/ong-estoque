@@ -90,8 +90,8 @@ export default function PoliticaPrivacidadePage() {
 
       <h2>7. Segurança</h2>
       <p>
-        Usamos senhas criptografadas, acesso por perfis (administrador e voluntário), conexão
-        segura e cópias de segurança. Nenhum sistema é 100% seguro, mas trabalhamos para
+        Usamos senhas criptografadas, acesso por perfis (administrador e voluntário) e conexão
+        segura (HTTPS). Nenhum sistema é 100% seguro, mas trabalhamos para
         reduzir os riscos. Se houver um incidente que possa causar risco ou dano relevante, a
         ONG comunicará a Autoridade Nacional de Proteção de Dados (ANPD) e as pessoas
         afetadas, nos prazos da lei.

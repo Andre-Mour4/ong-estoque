@@ -9,6 +9,22 @@ if (!process.env.JWT_SECRET) {
   );
 }
 
+// Em produção, recusa subir com uma chave fraca ou copiada do .env.example:
+// com ela, qualquer pessoa conseguiria fabricar um login.
+const CHAVES_DE_EXEMPLO = [
+  "troque_por_uma_chave_longa_e_aleatoria",
+  "cole_aqui_a_chave_que_o_comando_gerou",
+  "a_chave_que_voce_gerou",
+];
+if (
+  process.env.NODE_ENV === "production" &&
+  (process.env.JWT_SECRET.length < 32 || CHAVES_DE_EXEMPLO.includes(process.env.JWT_SECRET))
+) {
+  throw new Error(
+    "JWT_SECRET fraco para produção. Gere uma chave nova com: node -e \"console.log(require('crypto').randomBytes(48).toString('hex'))\""
+  );
+}
+
 // Enquanto a senha for temporária, só estas rotas funcionam.
 const ROTAS_LIBERADAS_NA_TROCA = ["/api/auth/me", "/api/auth/trocar-senha"];
 
