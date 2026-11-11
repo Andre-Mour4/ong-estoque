@@ -2,7 +2,7 @@
 
 Sistema web para organizar as doações recebidas pela ONG **Sonho de Um Menino**, com controle por data de validade, alertas de vencimento e busca/filtro rápido.
 
-Projeto de extensão (Práticas Extensionistas), desenvolvido em grupo, como continuação do chatbot de WhatsApp já em operação para a mesma ONG.
+Projeto de extensão (Práticas Extensionistas), desenvolvido em grupo para a ONG **Sonho de Um Menino**.
 
 ## 📌 Status
 
@@ -10,8 +10,8 @@ Projeto de extensão (Práticas Extensionistas), desenvolvido em grupo, como con
 |---|---|
 | Banco de dados (PostgreSQL) | ✅ Pronto |
 | Backend (API em Node + Express) | ✅ Pronto para o MVP |
-| Frontend (React) | 🚧 Em desenvolvimento (tela de login criada, ainda não ligada na API) |
-| Deploy | ⏳ A fazer |
+| Frontend (React) | ✅ Pronto para o MVP: login, Painel, Estoque, Registrar doação, Dar saída, Itens, Doadores, Histórico, Usuários e Trocar senha |
+| Deploy | 🚀 Guia pronto em [`docs/DEPLOY.md`](docs/DEPLOY.md). Falta o grupo colocar no ar |
 
 ## ✨ Funcionalidades do MVP
 
@@ -22,7 +22,8 @@ Projeto de extensão (Práticas Extensionistas), desenvolvido em grupo, como con
 - ⏰ Painel de validade: lotes **vencidos**, **vencendo** (próximos 30 dias) e **ok**
 - 🔍 Busca e filtros por item, categoria, doador e status
 - 🧾 Histórico de tudo que entra e sai, com o nome de quem fez
-- 👥 Gestão de usuários (só admin)
+- 👥 Gestão de usuários (só admin): permissões por pessoa, senha temporária com troca obrigatória no primeiro acesso, redefinir senha e anonimizar (LGPD)
+- 🔒 Páginas de Política de Privacidade e Termos de Uso
 
 > Exportação de relatórios em PDF/Excel fica para o próximo período.
 
@@ -34,7 +35,7 @@ Projeto de extensão (Práticas Extensionistas), desenvolvido em grupo, como con
 | Backend | Node.js + Express |
 | Banco de dados | PostgreSQL |
 | Autenticação | JWT + bcrypt |
-| Deploy (planejado) | Vercel (frontend) + Oracle Cloud Free Tier **ou** Render (backend e banco) |
+| Deploy | Qualquer serviço. Veja as opções em [`docs/DEPLOY.md`](docs/DEPLOY.md) |
 
 ## 📁 Estrutura do projeto
 
@@ -42,7 +43,9 @@ Projeto de extensão (Práticas Extensionistas), desenvolvido em grupo, como con
 ong-estoque/
 ├── backend/
 │   ├── database/
-│   │   └── schema.sql          # tabelas do banco
+│   │   ├── schema.sql          # tabelas do banco (seguro de rodar de novo)
+│   │   ├── reset.sql           # apaga tudo (SÓ em desenvolvimento)
+│   │   └── migrations/         # mudanças no banco já existente, em ordem
 │   ├── scripts/
 │   │   └── criar-admin.js      # cria o primeiro usuário administrador
 │   ├── src/
@@ -55,7 +58,10 @@ ong-estoque/
 │   └── package.json
 ├── frontend/                   # aplicação React
 ├── docs/
-│   └── API.md                  # documentação de todas as rotas da API
+│   ├── API.md                  # todas as rotas da API
+│   ├── DEPLOY.md               # como colocar no ar e atualizar
+│   ├── LGPD.md                 # proteção de dados e riscos jurídicos
+│   └── PENDENCIAS_LGPD.md      # o que a ONG e o grupo precisam preencher
 └── README.md
 ```
 
@@ -163,7 +169,7 @@ Ainda dentro de `backend/`:
 node scripts/criar-admin.js "Seu Nome" seuemail@exemplo.com SuaSenha123
 ```
 
-A senha precisa ter **no mínimo 8 caracteres**. Use só letras e números para o terminal não se confundir. Deve aparecer `Administrador criado:`. Esse e-mail e senha são o seu login no sistema. A senha é **temporária**: no primeiro acesso o sistema pede para trocá-la. Enquanto a tela de trocar senha não estiver pronta no frontend, acrescente `--sem-troca` ao final do comando (só em desenvolvimento).
+A senha precisa ter **no mínimo 8 caracteres**. Use só letras e números para o terminal não se confundir. Deve aparecer `Administrador criado:`. Esse e-mail e senha são o seu login. A senha é **temporária**: no primeiro acesso o sistema pede para trocá-la (se preferir pular isso só no seu ambiente de testes, acrescente `--sem-troca` no fim do comando). Os outros usuários o admin cria depois, na tela **Usuários**.
 
 ### 5. Rodar o backend
 
@@ -203,7 +209,7 @@ npm run dev
 
 Abra o endereço que aparecer no terminal (normalmente `http://localhost:5173`).
 
-> A tela de login já existe, mas ainda não está ligada na API. Quando for ligar, coloque o endereço da API em uma variável (`VITE_API_URL=http://localhost:3001`) em vez de escrever direto no código.
+> No computador, o site procura a API em `http://localhost:3001` sozinho. Só no deploy é preciso definir a `VITE_API_URL` (veja [`docs/DEPLOY.md`](docs/DEPLOY.md)). Entre com o admin que você criou no passo 4.
 
 ## 📡 API
 
@@ -216,6 +222,15 @@ Resumo do fluxo do estoque:
 3. Quando sai algo, registra uma **saída** no lote.
 
 O estoque de cada item é a soma dos seus lotes. Doação nova é sempre **lote novo**.
+
+## 📚 Documentação
+
+| Documento | Para quê |
+|---|---|
+| [`docs/API.md`](docs/API.md) | Todas as rotas, campos, permissões e exemplos |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Colocar no ar, variáveis, banco, backup e **como atualizar depois** |
+| [`docs/LGPD.md`](docs/LGPD.md) | Dados pessoais, direitos dos titulares e riscos jurídicos |
+| [`docs/PENDENCIAS_LGPD.md`](docs/PENDENCIAS_LGPD.md) | O que a ONG e o grupo ainda precisam preencher |
 
 ## 🌿 Fluxo de trabalho (Git)
 
@@ -244,6 +259,8 @@ git push origin feature/nome-da-tarefa
 
 > Antes do `git add .`, rode `git status` e confirme que o **`.env` e o `node_modules` não aparecem** na lista.
 
+> **Depois que o sistema estiver no ar, a `main` é o que a ONG usa.** Só faça merge depois de testar, e mudanças no banco têm um cuidado especial. Veja a seção 10 do [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
 ## 🔒 Regras de segurança do grupo
 
 - **Nunca** commitar o `.env` (ele tem a senha do banco e a chave dos logins).
@@ -263,6 +280,9 @@ git push origin feature/nome-da-tarefa
 | `EADDRINUSE` (porta em uso) | Já tem um servidor rodando na porta 3001. Feche o outro terminal ou mude o `PORT` no `.env` |
 | `psql` não é reconhecido (Windows) | Use o pgAdmin (passo 2) |
 | Erro `401` em uma rota | Falta o token de login no cabeçalho `Authorization` (veja o `docs/API.md`) |
+| Só aparece a tela "Primeiro acesso" | É o esperado para senha temporária: troque a senha para liberar o sistema |
+| "Você não tem acesso a esta tela" | Peça a um administrador para liberar a permissão em **Usuários** |
+| A API não sobe em produção e fala em `JWT_SECRET fraco` | Gere uma chave nova e longa (veja o passo 3 e o `docs/DEPLOY.md`) |
 | `Já existe um usuário com esse e-mail` | Esse admin já foi criado. Use esse e-mail no login ou crie outro |
 | `fatal: Too many arguments` ao clonar | Você digitou dois comandos na mesma linha. Rode um por vez |
 
@@ -270,10 +290,16 @@ Não resolveu? Mande um print do terminal no grupo.
 
 ## 🗺️ Próximos passos
 
-- [ ] Telas do frontend: login ligado na API, painel de validade, itens, registrar doação, dar saída, doadores e usuários
-- [ ] Ajustes de segurança e acabamento do backend antes de ir pro ar
-- [ ] Deploy (frontend + backend + banco de produção)
-- [ ] Exportação de relatórios em PDF/Excel (próximo período)
+- [x] Telas do frontend e permissões por usuário
+- [ ] **Deploy** (frontend + API + banco): siga o [`docs/DEPLOY.md`](docs/DEPLOY.md)
+- [ ] Preencher os dados da ONG e revisar os textos legais ([`docs/PENDENCIAS_LGPD.md`](docs/PENDENCIAS_LGPD.md))
+
+**Próximo período:**
+
+- [ ] Segurança: limite de tentativas no login, cabeçalhos de proteção (`helmet`) e registro das ações de administrador
+- [ ] Backup automático do banco
+- [ ] Exportação de relatórios em PDF/Excel
+- [ ] "Esqueci a senha" por e-mail e avisos de vencimento por e-mail ou WhatsApp
 
 ## 👥 Equipe
 

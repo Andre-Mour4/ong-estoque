@@ -167,3 +167,32 @@ Detalhes de LGPD: `docs/LGPD.md`.
 - **Atualizações:** ligue o deploy automático só à branch `main` e só faça merge depois de testar.
 - **Se suspeitar de vazamento:** troque a `JWT_SECRET` (desloga todos), troque a senha do banco, desative usuários suspeitos e siga `docs/LGPD.md`, seção 7.
 - **Avise a ONG:** no plano grátis da API, o primeiro acesso depois de um tempo parado demora cerca de 1 minuto.
+
+---
+
+## 10. Atualizando o sistema depois de no ar
+
+Dá para ir mexendo e atualizando sem problema, desde que a regra seja: **a `main` é a versão que a ONG usa**. Tudo passa por branch, teste e Pull Request antes de entrar nela.
+
+| O que mudou | Como é a atualização |
+|---|---|
+| **Só telas** (frontend) | A mais tranquila. Merge na `main` e o serviço publica sozinho em poucos minutos |
+| **A API** (backend) | O serviço reinicia a API no deploy. No plano grátis pode ficar alguns minutos fora. As pessoas **não são deslogadas** (o login continua valendo) |
+| **O banco** (coluna ou tabela nova) | **Exige um passo extra: a migração** (veja abaixo) |
+| **Variáveis de ambiente** | Mude no painel do serviço e reinicie ou refaça o deploy. A `VITE_API_URL` exige novo build do site |
+
+### Mudou o banco? Nesta ordem
+
+1. Faça um **backup** (`pg_dump`, seção 5).
+2. Crie um arquivo novo em `backend/database/migrations/` (ex.: `002_nome_da_mudanca.sql`), escrito para poder rodar mais de uma vez (`IF NOT EXISTS`). **Atualize também o `schema.sql`**, para quem for criar um banco novo.
+3. Rode a migração no **banco de produção** (editor SQL do serviço). Se a mudança só **acrescenta** coisas (coluna ou tabela nova), faça isso **antes** de publicar o código que depende dela.
+4. Publique o código e confira.
+
+Nunca rode o `reset.sql`. Evite apagar ou renomear colunas de uma vez: faça em duas etapas, para dar para voltar atrás.
+
+### Boas práticas
+
+- **Teste antes de mesclar**, no seu computador, com dados fictícios. Vercel e Netlify criam um endereço de teste por branch, mas ele costuma falar com a **mesma API e o mesmo banco de produção**. Não teste com dados reais ali.
+- **Se algo der errado:** reverta o commit problemático (`git revert`) e faça push na `main` para voltar à versão anterior. Alguns serviços também deixam republicar uma versão anterior pelo painel (confira onde vocês hospedarem). Por isso as migrações devem ser aditivas: uma mudança no banco já aplicada não volta sozinha.
+- **Mudou uma rota da API?** Atualize o `docs/API.md`. **Mudou algum passo de instalação?** Atualize o `README.md`.
+- Prefira atualizar em horário de pouco uso e avise a ONG antes de mudanças grandes.
